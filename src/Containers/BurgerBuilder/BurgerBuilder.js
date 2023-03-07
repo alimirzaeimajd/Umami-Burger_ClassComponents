@@ -4,9 +4,6 @@ import Burger from "../../Components/thisisBurger/Burger";
 import BurgerControls from "../../Components/thisisBurger/BurgerControls/BurgerControls";
 
 class BurgerBuilder extends Component {
-    // constructor (props) {
-
-    // }
 
     state = {
         ingredients: {
@@ -14,14 +11,35 @@ class BurgerBuilder extends Component {
             chease: 0,
             salad: 2,
             bacon: 0
-        }
+        },
+        totalPrice: 20
+    }
+
+    addIngredientsHandler = (type) => {
+        const oldCount = this.state.ingredients[type];
+        const updatedCount = oldCount + 1;
+        const updatedIngredients = {
+            ...this.state.ingredients
+        };
+        updatedIngredients[type] = updatedCount;
+        this.setState({ ingredients: updatedIngredients })
+    }
+
+    removeIngredientsHandler = (type) => {
+        const oldCount = this.state.ingredients[type];
+        const updatedCount = oldCount - 1;
+        const updatedIngredients = {
+            ...this.state.ingredients
+        };
+        updatedIngredients[type] = updatedCount;
+        this.setState({ ingredients: updatedIngredients })
     }
 
     render() {
         return (
             <Aux>
                 <Burger ingredients={this.state.ingredients} />
-                <BurgerControls />
+                <BurgerControls addIngredients={this.addIngredientsHandler} removeIngredients={this.removeIngredientsHandler} />
                 <div>Reviews</div>
             </Aux>
         )

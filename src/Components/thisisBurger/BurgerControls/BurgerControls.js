@@ -10,9 +10,9 @@ const controls = [
 ];
 
 const BurgerControls = (props) => (
-    <div className="BurgerControls">
+    <div className="BuildControls">
         {controls.map(ctrl => (
-            <BurgerControl key={ctrl.label} label={ctrl.label} />
+            <BurgerControl key={ctrl.label} label={ctrl.label} add={() => props.addIngredients(ctrl.type)} remove={() => props.removeIngredients(ctrl.type)} />
         ))}
     </div>
 );
