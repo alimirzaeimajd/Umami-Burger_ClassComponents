@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import Aux from "../../hoc/auxxx";
 import Burger from "../../Components/thisisBurger/Burger";
 import BurgerControls from "../../Components/thisisBurger/BurgerControls/BurgerControls";
+import Modal from '../../UI/Modal/Modal';
+import OrderSummery from "../../Components/thisisBurger/OrderSum/OrderSum";
 
 const INGREDIENT_PRICES = {
     salad: 0.5,
@@ -19,9 +21,10 @@ class BurgerBuilder extends Component {
             salad: 0,
             bacon: 0
         },
-        totalPrice: 0
+        totalPrice: 0,
+        purchasable: false
     }
-//<div>
+    //<div>
     // addIngredientsHandler = (type) => {
     //     const oldCount = this.state.ingredients[type];
     //     const updatedCount = oldCount + 1;
@@ -60,56 +63,66 @@ class BurgerBuilder extends Component {
     //         return false
     //     }
     // }
-//</div>
-
-addIngredientsHandler = ( type ) => {
-    const oldCount = this.state.ingredients[type];
-    const updatedCount = oldCount + 1;
-    const updatedIngredients = {
-        ...this.state.ingredients
-    };
-    updatedIngredients[type] = updatedCount;
-    const showPrice = INGREDIENT_PRICES[type]
-    const oldPrice =  this.state.totalPrice;
-    const newPrice = oldPrice + showPrice;
-    this.setState( { ingredients: updatedIngredients, totalPrice: newPrice } );
-    
-}
-
-removeIngredientsHandler = ( type ) => {
-    const oldCount = this.state.ingredients[type];
-    if ( oldCount <= 0 ) {
-        return;
+    //</div>
+    updatePurchasable(ingredient) {
+        
+        const sum = Object.keys(ingredient).map(igKey => { return ingredient[igKey] }).reduce((sum, el) => { return sum + el; }, 0)
+        this.setState({purchasable: sum > 0});
     }
-    const updatedCount = oldCount - 1;
-    const updatedIngredients = {
-        ...this.state.ingredients
-    };
-    updatedIngredients[type] = updatedCount;
-    const showPrice = INGREDIENT_PRICES[type]
-    const oldPrice =  this.state.totalPrice;
-    const newPrice = oldPrice - showPrice;
-    this.setState( { ingredients: updatedIngredients, totalPrice: newPrice } );
-    
-}
+
+    addIngredientsHandler = (type) => {
+        const oldCount = this.state.ingredients[type];
+        const updatedCount = oldCount + 1;
+        const updatedIngredients = {
+            ...this.state.ingredients
+        };
+        updatedIngredients[type] = updatedCount;
+        const showPrice = INGREDIENT_PRICES[type]
+        const oldPrice = this.state.totalPrice;
+        const newPrice = oldPrice + showPrice;
+        this.setState({ ingredients: updatedIngredients, totalPrice: newPrice });
+        this.updatePurchasable(updatedIngredients)
+    }
+
+    removeIngredientsHandler = (type) => {
+        const oldCount = this.state.ingredients[type];
+        if (oldCount <= 0) {
+            return;
+        }
+        const updatedCount = oldCount - 1;
+        const updatedIngredients = {
+            ...this.state.ingredients
+        };
+        updatedIngredients[type] = updatedCount;
+        const showPrice = INGREDIENT_PRICES[type]
+        const oldPrice = this.state.totalPrice;
+        const newPrice = oldPrice - showPrice;
+        this.setState({ ingredients: updatedIngredients, totalPrice: newPrice });
+        this.updatePurchasable(updatedIngredients)
+        
+    }
     render() {
 
         const disabledInfo = {
             ...this.state.ingredients
         };
-        for ( let key in disabledInfo ) {
+        for (let key in disabledInfo) {
             disabledInfo[key] = disabledInfo[key] <= 0;
         }
-        
+
 
         return (
             <Aux>
+                <Modal>
+                    <OrderSummery ingredients={this.state.ingredients}/>
+                </Modal>
                 <Burger ingredients={this.state.ingredients} />
                 <BurgerControls
                     addIngredients={this.addIngredientsHandler}
                     removeIngredients={this.removeIngredientsHandler}
                     disabled={disabledInfo}
-                    totalprice={this.state.totalPrice}/>
+                    totalprice={this.state.totalPrice}
+                    purchasable={this.state.purchasable} />
                 <div>Reviews</div>
             </Aux>
         )
