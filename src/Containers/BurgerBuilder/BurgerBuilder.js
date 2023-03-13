@@ -6,10 +6,10 @@ import Modal from '../../UI/Modal/Modal';
 import OrderSummery from "../../Components/thisisBurger/OrderSum/OrderSum";
 
 const INGREDIENT_PRICES = {
-    salad: 0.5,
-    cheese: 0.4,
-    meat: 1.3,
-    bacon: 0.7
+    salad: 0.25,
+    cheese: 0.5,
+    meat: 5,
+    bacon: 1
 };
 
 class BurgerBuilder extends Component {
@@ -22,52 +22,26 @@ class BurgerBuilder extends Component {
             bacon: 0
         },
         totalPrice: 0,
-        purchasable: false
+        purchasable: false,
+        purchasing: false
     }
-    //<div>
-    // addIngredientsHandler = (type) => {
-    //     const oldCount = this.state.ingredients[type];
-    //     const updatedCount = oldCount + 1;
-    //     const updatedIngredients = {
-    //         ...this.state.ingredients
-    //     };
-    //     updatedIngredients[type] = updatedCount;
-    //     this.setState({ ingredients: updatedIngredients })
-    // }
+    
+    purchaseHandler = () => {
+        this.setState({purchasing: true});
+    }
 
-    // removeIngredientsHandler = (type) => {
-    //     const oldCount = this.state.ingredients[type];
+    disableModalHandler = () => {
+        this.setState({purchasing: false});
+    }
 
-    //     const updatedCount = oldCount - 1;
-    //     if (oldCount <= 0) {
-    //         return;
-    //     }
-    //     const updatedIngredients = {
-    //         ...this.state.ingredients
-    //     };
-    //     updatedIngredients[type] = updatedCount;
-    //     this.setState({ ingredients: updatedIngredients })
-    // }
+    purchaseContinueHandler = () => {
+        alert('you confirm to Continue!');
+    }
 
-    // disableHandler = () => {
-    //     const disabledInfo = {
-    //         ...this.state.ingredients
-    //     };
-    //     for (let key in disabledInfo) {
-    //         disabledInfo[key] = disabledInfo[key] > 0;
-    //     }
-    //     console.log('why')
-    //     if (this.state.ingredients <= 0) {
-    //         return disabledInfo
-    //     } else {
-    //         return false
-    //     }
-    // }
-    //</div>
     updatePurchasable(ingredient) {
-        
+
         const sum = Object.keys(ingredient).map(igKey => { return ingredient[igKey] }).reduce((sum, el) => { return sum + el; }, 0)
-        this.setState({purchasable: sum > 0});
+        this.setState({ purchasable: sum > 0 });
     }
 
     addIngredientsHandler = (type) => {
@@ -99,7 +73,7 @@ class BurgerBuilder extends Component {
         const newPrice = oldPrice - showPrice;
         this.setState({ ingredients: updatedIngredients, totalPrice: newPrice });
         this.updatePurchasable(updatedIngredients)
-        
+
     }
     render() {
 
@@ -113,8 +87,11 @@ class BurgerBuilder extends Component {
 
         return (
             <Aux>
-                <Modal>
-                    <OrderSummery ingredients={this.state.ingredients}/>
+                <Modal show={this.state.purchasing} disableModal={this.disableModalHandler}>
+                    <OrderSummery 
+                    ingredients={this.state.ingredients}
+                    continueHandler={this.purchaseContinueHandler}
+                    cancelHandler={this.disableModalHandler} />
                 </Modal>
                 <Burger ingredients={this.state.ingredients} />
                 <BurgerControls
@@ -122,7 +99,8 @@ class BurgerBuilder extends Component {
                     removeIngredients={this.removeIngredientsHandler}
                     disabled={disabledInfo}
                     totalprice={this.state.totalPrice}
-                    purchasable={this.state.purchasable} />
+                    purchasable={this.state.purchasable}
+                    orderOn={this.purchaseHandler} />
                 <div>Reviews</div>
             </Aux>
         )
